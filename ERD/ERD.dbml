@@ -1,0 +1,88 @@
+Table dim_customers {
+  customer_id int [pk]
+  segment varchar
+  drinks_alcohol bool
+  is_local bool
+  joined_date date
+}
+
+Table dim_products {
+  product_id int [pk, increment]
+  item varchar
+  category varchar
+  unit_price float
+}
+
+Table dim_date {
+  date date [pk]
+  year date
+  month date
+  quarter int
+  day_of_week varchar
+  is_weekend bool
+  is_holiday bool
+}
+
+Table fact_orders {
+  order_id int [pk]
+  date date
+  customer_id int
+  channel varchar
+  party_size int
+  revenue float
+  cogs float
+  gross_profit float
+  discount float
+  tip float
+  delivery_fee float
+  total_collected float
+  rating int
+}
+
+Table fact_order_items {
+  order_item_id int [pk]
+  order_id int
+  product_id int
+  quantity int
+  cogs float
+  gross_profit float
+}
+
+Table fact_daily_pnl {
+  date date [pk]
+  covers int
+  gross_revenue float
+  cogs float
+  gross_profit float
+  labour_cost float
+  fixed_ops_cost float
+  operating_profit float
+  gp_margin_pct float
+}
+
+Table fact_reviews {
+  review_id int [pk]
+  order_id int
+  date date
+  rating int
+  channel varchar
+}
+
+Table dim_staff {
+  staff_id int [pk, increment]
+  role varchar
+  base_hourly_rate_2015 decimal
+  hire_date date
+  termination_date date
+}
+
+Ref: fact_orders.customer_id > dim_customers.customer_id
+Ref: fact_orders.date > dim_date.date
+
+Ref: fact_order_items.order_id > fact_orders.order_id
+Ref: fact_order_items.product_id > dim_products.product_id
+
+Ref: fact_reviews.order_id > fact_orders.order_id
+Ref: fact_reviews.date > dim_date.date
+
+Ref: fact_daily_pnl.date > dim_date.date
